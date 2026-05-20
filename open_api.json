@@ -1,0 +1,2453 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "Api server",
+      "version": "0.1.0"
+    },
+    "paths": {
+      "/authorization/auth": {
+        "post": {
+          "tags": [
+            "authorization"
+          ],
+          "summary": "Auth User",
+          "operationId": "auth_user_authorization_auth_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Auth"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/": {
+        "get": {
+          "summary": "Root",
+          "operationId": "root__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/files": {
+        "get": {
+          "summary": "List Files",
+          "description": "Возвращает список сохраненных WAV-файлов.",
+          "operationId": "list_files_files_get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/files/{filename}": {
+        "get": {
+          "summary": "Download Wav",
+          "description": "Отдает WAV-файл клиенту.",
+          "operationId": "download_wav_files__filename__get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "filename",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Filename"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/script_files/{script_file}": {
+        "get": {
+          "summary": "Get Script Wav",
+          "description": "Отдает файлы для диалога.",
+          "operationId": "get_script_wav_script_files__script_file__get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "script_file",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Script File"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/script_files": {
+        "post": {
+          "summary": "Set Script Wav",
+          "description": "Принимает текст для команды, озвучивает его и сохраняет на сервере.",
+          "operationId": "set_script_wav_script_files_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateScriptFile"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/tts/{text}": {
+        "get": {
+          "summary": "Tts Wav",
+          "description": "Принимает текст, озвучивает его и отдает wav-файл клиенту.",
+          "operationId": "tts_wav_tts__text__get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "text",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Text"
+              }
+            },
+            {
+              "name": "filename",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Filename"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/recognition": {
+        "post": {
+          "summary": "Recognize",
+          "description": "Функция принимает настройки, ауди файл и возвращает массив распознаных цифр\n:param is_recognition:\n:param type_recognition:\n:param file:\n:return:",
+          "operationId": "recognize_recognition_post",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/Body_recognize_recognition_post"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/object/{resource}": {
+        "get": {
+          "summary": "Get Objects",
+          "operationId": "get_objects_object__resource__get",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "resource",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Resource"
+              }
+            },
+            {
+              "name": "sort_by",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Sort By"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "maximum": 1000,
+                "minimum": 1,
+                "default": 100,
+                "title": "Limit"
+              }
+            },
+            {
+              "name": "offset",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0,
+                "title": "Offset"
+              }
+            },
+            {
+              "name": "include_deleted",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "boolean",
+                "default": false,
+                "title": "Include Deleted"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/account/{account}": {
+        "post": {
+          "summary": "Search Personal Account",
+          "operationId": "search_personal_account_account__account__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "account",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "title": "Account"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/client": {
+        "post": {
+          "summary": "Create Client Endpoint",
+          "operationId": "create_client_endpoint_client_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/client/{client_id}": {
+        "post": {
+          "summary": "Change Client",
+          "operationId": "change_client_client__client_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "client_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Client Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/phone": {
+        "post": {
+          "summary": "Create Phone",
+          "operationId": "create_phone_phone_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/phone/{phone_id}": {
+        "post": {
+          "summary": "Change Phone",
+          "operationId": "change_phone_phone__phone_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "phone_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Phone Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/address": {
+        "post": {
+          "summary": "Create Address",
+          "operationId": "create_address_address_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/address/{address_id}": {
+        "post": {
+          "summary": "Change Address",
+          "operationId": "change_address_address__address_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "address_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Address Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/meter_type": {
+        "post": {
+          "summary": "Create Meter Type",
+          "operationId": "create_meter_type_meter_type_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeMeterCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/meter_type/{meter_type_id}": {
+        "post": {
+          "summary": "Change Meter Type",
+          "operationId": "change_meter_type_meter_type__meter_type_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "meter_type_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Meter Type Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypeMeterActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/meter": {
+        "post": {
+          "summary": "Create Meter",
+          "operationId": "create_meter_meter_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/meter/{meter_id}": {
+        "post": {
+          "summary": "Change Meter",
+          "operationId": "change_meter_meter__meter_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "meter_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Meter Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeterActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/zone": {
+        "post": {
+          "summary": "Create Zone",
+          "operationId": "create_zone_zone_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/zone/{zone_id}": {
+        "post": {
+          "summary": "Change Zone",
+          "operationId": "change_zone_zone__zone_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "zone_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Zone Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/reading": {
+        "post": {
+          "summary": "Create Reading",
+          "operationId": "create_reading_reading_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadingsCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/reading/{reading_id}": {
+        "post": {
+          "summary": "Change Reading",
+          "operationId": "change_reading_reading__reading_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "reading_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Reading Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadingsActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user": {
+        "post": {
+          "summary": "Create User",
+          "operationId": "create_user_user_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/user/{user_id}": {
+        "post": {
+          "summary": "Change User",
+          "operationId": "change_user_user__user_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "user_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "User Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/role": {
+        "post": {
+          "summary": "Create Role",
+          "operationId": "create_role_role_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/role/{role_id}": {
+        "post": {
+          "summary": "Change Role",
+          "operationId": "change_role_role__role_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "role_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Role Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/permission": {
+        "post": {
+          "summary": "Create Permission",
+          "operationId": "create_permission_permission_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/permission/{permission_id}": {
+        "post": {
+          "summary": "Change Permission",
+          "operationId": "change_permission_permission__permission_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "permission_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Permission Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/role_permission": {
+        "post": {
+          "summary": "Create Role Permission",
+          "operationId": "create_role_permission_role_permission_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RolePermissionCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/role_permission/{role_permission_id}": {
+        "post": {
+          "summary": "Change Role Permission",
+          "operationId": "change_role_permission_role_permission__role_permission_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "role_permission_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "Role Permission Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RolePermissionActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user_role": {
+        "post": {
+          "summary": "Create User Role",
+          "operationId": "create_user_role_user_role_post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRoleCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ]
+        }
+      },
+      "/user_role/{user_role_id}": {
+        "post": {
+          "summary": "Change User Role",
+          "operationId": "change_user_role_user_role__user_role_id__post",
+          "security": [
+            {
+              "HTTPBearer": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "user_role_id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "title": "User Role Id"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRoleActionRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+  
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "AddressActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "client_id": {
+              "type": "integer",
+              "title": "Client Id"
+            },
+            "city": {
+              "type": "string",
+              "title": "City"
+            },
+            "street": {
+              "type": "string",
+              "title": "Street"
+            },
+            "house": {
+              "type": "string",
+              "title": "House"
+            },
+            "flat": {
+              "type": "string",
+              "title": "Flat"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "client_id",
+            "city",
+            "street",
+            "house",
+            "flat"
+          ],
+          "title": "AddressActionRequest"
+        },
+        "AddressCreate": {
+          "properties": {
+            "client_id": {
+              "type": "integer",
+              "title": "Client Id"
+            },
+            "city": {
+              "type": "string",
+              "title": "City"
+            },
+            "street": {
+              "type": "string",
+              "title": "Street"
+            },
+            "house": {
+              "type": "string",
+              "title": "House"
+            },
+            "flat": {
+              "type": "string",
+              "title": "Flat"
+            }
+          },
+          "type": "object",
+          "required": [
+            "client_id",
+            "city",
+            "street",
+            "house",
+            "flat"
+          ],
+          "title": "AddressCreate"
+        },
+        "Auth": {
+          "properties": {
+            "user_login": {
+              "type": "string",
+              "title": "User Login"
+            },
+            "user_pass": {
+              "type": "string",
+              "title": "User Pass"
+            }
+          },
+          "type": "object",
+          "required": [
+            "user_login",
+            "user_pass"
+          ],
+          "title": "Auth"
+        },
+        "Body_recognize_recognition_post": {
+          "properties": {
+            "is_recognition": {
+              "type": "string",
+              "title": "Is Recognition"
+            },
+            "type_recognition": {
+              "type": "string",
+              "title": "Type Recognition"
+            },
+            "file": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream",
+              "title": "File"
+            }
+          },
+          "type": "object",
+          "required": [
+            "is_recognition",
+            "type_recognition",
+            "file"
+          ],
+          "title": "Body_recognize_recognition_post"
+        },
+        "ClientActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "last_name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last Name"
+            },
+            "first_name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "First Name"
+            },
+            "middle_name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Middle Name"
+            },
+            "account_number": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Number"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action"
+          ],
+          "title": "ClientActionRequest"
+        },
+        "ClientCreate": {
+          "properties": {
+            "last_name": {
+              "type": "string",
+              "title": "Last Name"
+            },
+            "first_name": {
+              "type": "string",
+              "title": "First Name"
+            },
+            "middle_name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Middle Name"
+            },
+            "account_number": {
+              "type": "string",
+              "title": "Account Number"
+            }
+          },
+          "type": "object",
+          "required": [
+            "last_name",
+            "first_name",
+            "account_number"
+          ],
+          "title": "ClientCreate"
+        },
+        "CreateScriptFile": {
+          "properties": {
+            "name_file": {
+              "type": "string",
+              "title": "Name File"
+            },
+            "text_for_voice_over": {
+              "type": "string",
+              "title": "Text For Voice Over"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name_file",
+            "text_for_voice_over"
+          ],
+          "title": "CreateScriptFile"
+        },
+        "HTTPValidationError": {
+          "properties": {
+            "detail": {
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              },
+              "type": "array",
+              "title": "Detail"
+            }
+          },
+          "type": "object",
+          "title": "HTTPValidationError"
+        },
+        "MeterActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "serial_number": {
+              "type": "string",
+              "title": "Serial Number"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "client_id": {
+              "type": "integer",
+              "title": "Client Id"
+            },
+            "type_id": {
+              "type": "integer",
+              "title": "Type Id"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "serial_number",
+            "name",
+            "client_id",
+            "type_id"
+          ],
+          "title": "MeterActionRequest"
+        },
+        "MeterCreate": {
+          "properties": {
+            "serial_number": {
+              "type": "string",
+              "title": "Serial Number"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "client_id": {
+              "type": "integer",
+              "title": "Client Id"
+            },
+            "type_id": {
+              "type": "integer",
+              "title": "Type Id"
+            }
+          },
+          "type": "object",
+          "required": [
+            "serial_number",
+            "name",
+            "client_id",
+            "type_id"
+          ],
+          "title": "MeterCreate"
+        },
+        "PermissionActionRequest": {
+          "properties": {
+            "action_type": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action Type"
+            },
+            "resource": {
+              "type": "string",
+              "title": "Resource"
+            },
+            "action": {
+              "type": "string",
+              "title": "Action"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action_type",
+            "resource",
+            "action",
+            "name"
+          ],
+          "title": "PermissionActionRequest"
+        },
+        "PermissionCreate": {
+          "properties": {
+            "resource": {
+              "type": "string",
+              "title": "Resource"
+            },
+            "action": {
+              "type": "string",
+              "title": "Action"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          "type": "object",
+          "required": [
+            "resource",
+            "action",
+            "name"
+          ],
+          "title": "PermissionCreate"
+        },
+        "PhoneActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "client_id": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Client Id"
+            },
+            "phone_number": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Phone Number"
+            },
+            "is_primary": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Is Primary"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action"
+          ],
+          "title": "PhoneActionRequest"
+        },
+        "PhoneCreate": {
+          "properties": {
+            "client_id": {
+              "type": "integer",
+              "title": "Client Id"
+            },
+            "phone_number": {
+              "type": "string",
+              "title": "Phone Number"
+            },
+            "is_primary": {
+              "type": "boolean",
+              "title": "Is Primary",
+              "default": false
+            }
+          },
+          "type": "object",
+          "required": [
+            "client_id",
+            "phone_number"
+          ],
+          "title": "PhoneCreate"
+        },
+        "ReadingsActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "meter_id": {
+              "type": "integer",
+              "title": "Meter Id"
+            },
+            "zone_id": {
+              "type": "integer",
+              "title": "Zone Id"
+            },
+            "value": {
+              "type": "integer",
+              "title": "Value"
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Date"
+            },
+            "submitted_by": {
+              "type": "integer",
+              "title": "Submitted By"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "meter_id",
+            "zone_id",
+            "value",
+            "date",
+            "submitted_by"
+          ],
+          "title": "ReadingsActionRequest"
+        },
+        "ReadingsCreate": {
+          "properties": {
+            "meter_id": {
+              "type": "integer",
+              "title": "Meter Id"
+            },
+            "zone_id": {
+              "type": "integer",
+              "title": "Zone Id"
+            },
+            "value": {
+              "type": "integer",
+              "title": "Value"
+            },
+            "date": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Date"
+            },
+            "submitted_by": {
+              "type": "integer",
+              "title": "Submitted By"
+            }
+          },
+          "type": "object",
+          "required": [
+            "meter_id",
+            "zone_id",
+            "value",
+            "date",
+            "submitted_by"
+          ],
+          "title": "ReadingsCreate"
+        },
+        "RoleActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "id": {
+              "type": "integer",
+              "title": "Id"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "id",
+            "name",
+            "description"
+          ],
+          "title": "RoleActionRequest"
+        },
+        "RoleCreate": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "description"
+          ],
+          "title": "RoleCreate"
+        },
+        "RolePermissionActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action"
+          ],
+          "title": "RolePermissionActionRequest"
+        },
+        "RolePermissionCreate": {
+          "properties": {
+            "permission_id": {
+              "type": "integer",
+              "title": "Permission Id"
+            },
+            "role_id": {
+              "type": "integer",
+              "title": "Role Id"
+            }
+          },
+          "type": "object",
+          "required": [
+            "permission_id",
+            "role_id"
+          ],
+          "title": "RolePermissionCreate"
+        },
+        "TypeMeterActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "name"
+          ],
+          "title": "TypeMeterActionRequest"
+        },
+        "TypeMeterCreate": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "title": "TypeMeterCreate"
+        },
+        "UserActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "full_name": {
+              "type": "string",
+              "title": "Full Name"
+            },
+            "nickname": {
+              "type": "string",
+              "title": "Nickname"
+            },
+            "email": {
+              "type": "string",
+              "title": "Email"
+            },
+            "password_hash": {
+              "type": "string",
+              "title": "Password Hash"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "full_name",
+            "nickname",
+            "email",
+            "password_hash"
+          ],
+          "title": "UserActionRequest"
+        },
+        "UserCreate": {
+          "properties": {
+            "full_name": {
+              "type": "string",
+              "title": "Full Name"
+            },
+            "nickname": {
+              "type": "string",
+              "title": "Nickname"
+            },
+            "email": {
+              "type": "string",
+              "title": "Email"
+            },
+            "password_hash": {
+              "type": "string",
+              "title": "Password Hash"
+            }
+          },
+          "type": "object",
+          "required": [
+            "full_name",
+            "nickname",
+            "email",
+            "password_hash"
+          ],
+          "title": "UserCreate"
+        },
+        "UserRoleActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action"
+          ],
+          "title": "UserRoleActionRequest"
+        },
+        "UserRoleCreate": {
+          "properties": {
+            "user_id": {
+              "type": "integer",
+              "title": "User Id"
+            },
+            "role_id": {
+              "type": "integer",
+              "title": "Role Id"
+            }
+          },
+          "type": "object",
+          "required": [
+            "user_id",
+            "role_id"
+          ],
+          "title": "UserRoleCreate"
+        },
+        "ValidationError": {
+          "properties": {
+            "loc": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "type": "array",
+              "title": "Location"
+            },
+            "msg": {
+              "type": "string",
+              "title": "Message"
+            },
+            "type": {
+              "type": "string",
+              "title": "Error Type"
+            },
+            "input": {
+              "title": "Input"
+            },
+            "ctx": {
+              "type": "object",
+              "title": "Context"
+            }
+          },
+          "type": "object",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "title": "ValidationError"
+        },
+        "ZoneActionRequest": {
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "update",
+                "delete"
+              ],
+              "title": "Action"
+            },
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "type": "object",
+          "required": [
+            "action",
+            "name",
+            "description"
+          ],
+          "title": "ZoneActionRequest"
+        },
+        "ZoneCreate": {
+          "properties": {
+            "name": {
+              "type": "string",
+              "title": "Name"
+            },
+            "description": {
+              "type": "string",
+              "title": "Description"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "description"
+          ],
+          "title": "ZoneCreate"
+        }
+      },
+      "securitySchemes": {
+        "HTTPBearer": {
+          "type": "http",
+          "scheme": "bearer"
+        }
+      }
+    }
+  }
