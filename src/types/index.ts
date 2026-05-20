@@ -9,7 +9,7 @@ export interface TokenPayload {
   sub?: string
   email?: string
   role_id?: number
-  role_name?: UserRole | string
+  role?: UserRole | string
   exp?: number
 }
 

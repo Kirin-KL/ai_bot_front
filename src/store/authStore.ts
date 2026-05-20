@@ -21,10 +21,15 @@ function applyTokenPayload(
   token: string,
 ) {
   const payload = parseJwt(token)
+  const role =
+    (payload?.role as UserRole | string | undefined) ??
+    (payload?.role_name as UserRole | string | undefined) ??
+    null
+
   set({
     token,
     email: payload?.email ?? null,
-    roleName: (payload?.role_name as UserRole) ?? null,
+    roleName: role,
     roleId: payload?.role_id ?? null,
     isAuthenticated: true,
   })

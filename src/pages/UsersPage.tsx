@@ -153,7 +153,6 @@ export function UsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Пользователи</h1>
-          <p className="mt-1 text-slate-500">Только для администраторов</p>
         </div>
         <Button onClick={openCreate}>Добавить пользователя</Button>
       </div>
