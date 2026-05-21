@@ -1,8 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { fetchObjects } from '@/api/objects'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/ui/DataTable'
 import { Spinner } from '@/components/ui/Spinner'
+import {
+  downloadReadingsExcel,
+  getExportButtonLabel,
+} from '@/lib/exportReadings'
 import { formatReadingValue } from '@/lib/readings'
 import {
   filterReadingsByPeriod,
@@ -85,6 +90,15 @@ export function HomePage() {
     [users],
   )
 
+  const exportMaps = useMemo(
+    () => ({ meterMap, clientMap, typeMap, userMap }),
+    [meterMap, clientMap, typeMap, userMap],
+  )
+
+  const handleExportExcel = useCallback(() => {
+    downloadReadingsExcel(filteredReadings, period, exportMaps, formatDate)
+  }, [filteredReadings, period, exportMaps])
+
   if (loading) {
     return (
       <div className="flex justify-center py-24">
@@ -141,25 +155,35 @@ export function HomePage() {
           <h2 className="text-lg font-semibold text-slate-800">
             Переданные показания
           </h2>
-          <div
-            className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm"
-            role="group"
-            aria-label="Фильтр по периоду"
-          >
-            {(['all', 'today', 'week', 'month'] as const).map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setPeriod(key)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
-                  period === key
-                    ? 'bg-brand-600 text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                {READING_PERIOD_LABELS[key]}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleExportExcel}
+              disabled={filteredReadings.length === 0}
+            >
+              {getExportButtonLabel(period)}
+            </Button>
+            <div
+              className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm"
+              role="group"
+              aria-label="Фильтр по периоду"
+            >
+              {(['all', 'today', 'week', 'month'] as const).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setPeriod(key)}
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                    period === key
+                      ? 'bg-brand-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {READING_PERIOD_LABELS[key]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <p className="mb-3 text-sm text-slate-500">
