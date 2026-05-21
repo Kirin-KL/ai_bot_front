@@ -182,12 +182,14 @@ export function HomePage() {
             },
             { key: 'value', header: 'Значение' },
             {
-              key: 'meter_id',
-              header: 'Счётчик',
-              render: (r) => {
-                const m = meterMap.get(r.meter_id)
-                return m ? `${m.name} (${m.serial_number})` : r.meter_id
-              },
+              key: 'meter_name',
+              header: 'Название',
+              render: (r) => meterMap.get(r.meter_id)?.name ?? '—',
+            },
+            {
+              key: 'meter_serial',
+              header: 'Серийный №',
+              render: (r) => meterMap.get(r.meter_id)?.serial_number ?? '—',
             },
             {
               key: 'client',
