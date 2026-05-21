@@ -3,6 +3,7 @@ import { fetchObjects } from '@/api/objects'
 import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/ui/DataTable'
 import { Spinner } from '@/components/ui/Spinner'
+import { formatReadingValue } from '@/lib/readings'
 import {
   filterReadingsByPeriod,
   getReadingStats,
@@ -180,7 +181,17 @@ export function HomePage() {
               header: 'Дата',
               render: (r) => formatDate(r.date),
             },
-            { key: 'value', header: 'Значение' },
+            {
+              key: 'value',
+              header: 'Значение',
+              render: (r) => {
+                const m = meterMap.get(r.meter_id)
+                const typeName = m
+                  ? typeMap.get(m.type_id)?.name
+                  : undefined
+                return formatReadingValue(r.value, typeName)
+              },
+            },
             {
               key: 'meter_name',
               header: 'Название',
