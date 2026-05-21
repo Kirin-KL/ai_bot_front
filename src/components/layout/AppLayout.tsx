@@ -21,9 +21,11 @@ export function AppLayout() {
       <aside className="flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
         <div className="border-b border-slate-100 px-5 py-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-sm font-bold text-white">
-              AI
-            </div>
+            <img
+              src="/icon.png"
+              alt="Голосовой бот"
+              className="h-10 w-10 shrink-0 rounded-xl object-contain"
+            />
             <div>
               <p className="text-sm font-semibold text-slate-900">Голосовой бот</p>
               <p className="text-xs text-slate-500">Панель управления</p>

@@ -31,9 +31,11 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-brand-700 to-brand-600 p-4">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 text-xl font-bold text-white">
-            AI
-          </div>
+          <img
+            src="/icon.png"
+            alt="Голосовой бот"
+            className="mx-auto mb-4 h-14 w-14 rounded-2xl object-contain"
+          />
           <h1 className="text-2xl font-bold text-slate-900">Вход в систему</h1>
           <p className="mt-1 text-sm text-slate-500">
             Управление голосовым ботом приёма показаний
