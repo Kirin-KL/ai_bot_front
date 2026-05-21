@@ -5,14 +5,26 @@ export function Card({
   value,
   subtitle,
   icon,
+  onClick,
+  active,
 }: {
   title: string
   value: string | number
   subtitle?: string
   icon?: ReactNode
+  onClick?: () => void
+  active?: boolean
 }) {
-  return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+  const className = [
+    'rounded-2xl border bg-white p-5 shadow-sm text-left w-full transition',
+    active
+      ? 'border-brand-500 ring-2 ring-brand-500/20'
+      : 'border-slate-200/80',
+    onClick ? 'cursor-pointer hover:border-brand-300 hover:shadow-md' : '',
+  ].join(' ')
+
+  const content = (
+    <>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">{title}</p>
@@ -27,6 +39,16 @@ export function Card({
           <div className="rounded-xl bg-brand-50 p-3 text-brand-600">{icon}</div>
         )}
       </div>
-    </div>
+    </>
   )
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={className}>
+        {content}
+      </button>
+    )
+  }
+
+  return <div className={className}>{content}</div>
 }

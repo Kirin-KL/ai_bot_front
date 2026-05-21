@@ -3,7 +3,12 @@ import { fetchObjects } from '@/api/objects'
 import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/ui/DataTable'
 import { Spinner } from '@/components/ui/Spinner'
-import { getReadingStats } from '@/lib/stats'
+import {
+  filterReadingsByPeriod,
+  getReadingStats,
+  READING_PERIOD_LABELS,
+  type ReadingPeriod,
+} from '@/lib/stats'
 import type { Client, Meter, MeterType, Reading, User } from '@/types'
 
 function formatDate(iso: string) {
@@ -24,6 +29,7 @@ export function HomePage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [period, setPeriod] = useState<ReadingPeriod>('all')
 
   useEffect(() => {
     async function load() {
@@ -55,6 +61,11 @@ export function HomePage() {
   }, [])
 
   const stats = useMemo(() => getReadingStats(readings), [readings])
+
+  const filteredReadings = useMemo(
+    () => filterReadingsByPeriod(readings, period),
+    [readings, period],
+  )
 
   const meterMap = useMemo(
     () => new Map(meters.map((m) => [m.id, m])),
@@ -97,18 +108,71 @@ export function HomePage() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card title="За сегодня" value={stats.today} />
-        <Card title="За неделю" value={stats.week} />
-        <Card title="За месяц" value={stats.month} />
-        <Card title="Всего в выборке" value={stats.total} subtitle="до 500 записей" />
+        <Card
+          title="За сегодня"
+          value={stats.today}
+          active={period === 'today'}
+          onClick={() => setPeriod('today')}
+        />
+        <Card
+          title="За неделю"
+          value={stats.week}
+          active={period === 'week'}
+          onClick={() => setPeriod('week')}
+        />
+        <Card
+          title="За месяц"
+          value={stats.month}
+          active={period === 'month'}
+          onClick={() => setPeriod('month')}
+        />
+        <Card
+          title="Всего в выборке"
+          value={stats.total}
+          subtitle="до 500 записей"
+          active={period === 'all'}
+          onClick={() => setPeriod('all')}
+        />
       </div>
 
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-slate-800">
-          Переданные показания
-        </h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-slate-800">
+            Переданные показания
+          </h2>
+          <div
+            className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm"
+            role="group"
+            aria-label="Фильтр по периоду"
+          >
+            {(['all', 'today', 'week', 'month'] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setPeriod(key)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                  period === key
+                    ? 'bg-brand-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {READING_PERIOD_LABELS[key]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="mb-3 text-sm text-slate-500">
+          {period === 'all'
+            ? `Показано ${filteredReadings.length} из ${stats.total} записей в выборке`
+            : `Период: ${READING_PERIOD_LABELS[period].toLowerCase()} — ${filteredReadings.length} записей`}
+        </p>
         <DataTable<Reading>
-          data={readings}
+          data={filteredReadings}
+          emptyMessage={
+            period === 'all'
+              ? 'Нет данных'
+              : `Нет показаний за выбранный период (${READING_PERIOD_LABELS[period].toLowerCase()})`
+          }
           columns={[
             { key: 'id', header: 'ID' },
             {
