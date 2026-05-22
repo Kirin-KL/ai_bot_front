@@ -38,7 +38,7 @@ export function LoginPage() {
           />
           <h1 className="text-2xl font-bold text-slate-900">Вход в систему</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Управление голосовым ботом приёма показаний
+            Управление голосовым интерфейсом приёма показаний
           </p>
         </div>
 

@@ -103,7 +103,7 @@ export function MetersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Счётчики</h1>
-          <p className="mt-1 text-slate-500">Учёт приборов учёта</p>
+          <p className="mt-1 text-slate-500">Приборы учёта</p>
         </div>
         <Button onClick={openCreate}>Добавить счётчик</Button>
       </div>

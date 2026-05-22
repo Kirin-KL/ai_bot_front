@@ -27,7 +27,7 @@ export function AppLayout() {
               className="h-10 w-10 shrink-0 rounded-xl object-contain"
             />
             <div>
-              <p className="text-sm font-semibold text-slate-900">Голосовой бот</p>
+              <p className="text-sm font-semibold text-slate-900">Голосовой интерфейс</p>
               <p className="text-xs text-slate-500">Панель управления</p>
             </div>
           </div>
