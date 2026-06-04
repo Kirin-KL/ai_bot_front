@@ -65,7 +65,7 @@ export async function changeUser(
     full_name: string
     nickname: string
     email: string
-    password_hash: string
+    password_hash?: string
   },
 ) {
   const { data } = await apiClient.post(`/user/${userId}`, body)

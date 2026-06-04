@@ -87,16 +87,25 @@ export function UsersPage() {
   async function handleSave() {
     setSaving(true)
     try {
-      const password = form.password || (editing?.password_hash ?? '')
-
       if (editing) {
-        await changeUser(editing.id, {
+        const updatePayload: {
+          action: 'update'
+          full_name: string
+          nickname: string
+          email: string
+          password_hash?: string
+        } = {
           action: 'update',
           full_name: form.full_name,
           nickname: form.nickname,
           email: form.email,
-          password_hash: password,
-        })
+        }
+
+        if (form.password.trim()) {
+          updatePayload.password_hash = form.password
+        }
+
+        await changeUser(editing.id, updatePayload)
         const link = getUserRoleId(editing.id)
         const newRoleId = Number(form.role_id)
         if (link && link.role_id !== newRoleId) {
