@@ -140,3 +140,29 @@ export async function changeRolePermission(
   const { data } = await apiClient.post(`/role_permission/${rolePermissionId}`, body)
   return data
 }
+
+export async function createReading(body: {
+  meter_id: number
+  zone_id: number
+  value: number
+  date: string
+  submitted_by: number
+}) {
+  const { data } = await apiClient.post('/reading', body)
+  return data
+}
+
+export async function changeReading(
+  readingId: number,
+  body: {
+    action: 'update' | 'delete'
+    zone_id: number
+    value: number
+    date: string
+    submitted_by: number
+    meter_id?: number
+  },
+) {
+  const { data } = await apiClient.post(`/reading/${readingId}`, body)
+  return data
+}
