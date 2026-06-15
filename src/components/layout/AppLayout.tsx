@@ -17,8 +17,8 @@ export function AppLayout() {
   const admin = isAdmin()
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-slate-200 bg-white">
+    <div className="flex h-screen">
+      <aside className="flex h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white">
         <div className="border-b border-slate-100 px-5 py-6">
           <div className="flex items-center gap-3">
             <img
@@ -33,7 +33,7 @@ export function AppLayout() {
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="flex-1 space-y-1 overflow-auto p-3">
           {navItems
             .filter((item) => !item.adminOnly || admin)
             .map((item) => (

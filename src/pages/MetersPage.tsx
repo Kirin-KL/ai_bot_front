@@ -29,9 +29,9 @@ export function MetersPage() {
     setLoading(true)
     try {
       const [m, c, t] = await Promise.all([
-        fetchObjects<Meter>('meters', { sort_by: '-id', limit: 1000 }),
+        fetchObjects<Meter>('meters', { sort_by: '-id', limit: 1000  }),
         fetchObjects<Client>('clients', { limit: 1000 }),
-        fetchObjects<MeterType>('meter_types', { limit: 100 }),
+        fetchObjects<MeterType>('meter_types', { limit: 1000  }),
       ])
       setMeters(m)
       setClients(c)

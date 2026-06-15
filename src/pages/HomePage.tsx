@@ -263,7 +263,7 @@ export function HomePage() {
             Переданные показания
           </h2>
           <div className="flex flex-wrap items-center gap-3">
-            <Button onClick={openCreate}>Добавить показание</Button>
+            {/* <Button onClick={openCreate}>Добавить показание</Button> */}
             <Button
               type="button"
               variant="secondary"
@@ -307,11 +307,20 @@ export function HomePage() {
               : `Нет показаний за выбранный период (${READING_PERIOD_LABELS[period].toLowerCase()})`
           }
           columns={[
-            { key: 'id', header: 'ID' },
             {
               key: 'date',
-              header: 'Дата',
+              header: 'Дата передачи',
               render: (r) => formatDate(r.date),
+            },
+            {
+              key: 'meter_serial',
+              header: 'Номер ПУ',
+              render: (r) => meterMap.get(r.meter_id)?.serial_number ?? '—',
+            },
+            {
+              key: 'meter_name',
+              header: 'Название ПУ',
+              render: (r) => meterMap.get(r.meter_id)?.name ?? '—',
             },
             {
               key: 'value',
@@ -325,30 +334,8 @@ export function HomePage() {
               },
             },
             {
-              key: 'meter_name',
-              header: 'Название',
-              render: (r) => meterMap.get(r.meter_id)?.name ?? '—',
-            },
-            {
-              key: 'meter_serial',
-              header: 'Серийный №',
-              render: (r) => meterMap.get(r.meter_id)?.serial_number ?? '—',
-            },
-            {
-              key: 'client',
-              header: 'Клиент',
-              render: (r) => {
-                const m = meterMap.get(r.meter_id)
-                if (!m) return '—'
-                const c = clientMap.get(m.client_id)
-                return c
-                  ? `${c.last_name} ${c.first_name}`
-                  : m.client_id
-              },
-            },
-            {
               key: 'type',
-              header: 'Тип',
+              header: 'Тип ПУ',
               render: (r) => {
                 const m = meterMap.get(r.meter_id)
                 if (!m) return '—'
@@ -356,11 +343,21 @@ export function HomePage() {
               },
             },
             {
-              key: 'submitted_by',
-              header: 'Передал',
-              render: (r) =>
-                userMap.get(r.submitted_by)?.full_name ?? r.submitted_by,
+              key: 'client',
+              header: 'ЛЦ клиента',
+              render: (r) => {
+                const m = meterMap.get(r.meter_id)
+                if (!m) return '—'
+                const c = clientMap.get(m.client_id)
+                return c ? c.account_number : '—'
+              },
             },
+            //{
+              //key: 'submitted_by',
+              //header: 'Передал',
+              //render: (r) =>
+               // userMap.get(r.submitted_by)?.full_name ?? r.submitted_by,
+            //},
             {
               key: 'actions',
               header: '',

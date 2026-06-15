@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   changeRole,
+  changePermission,
   changeRolePermission,
   createPermission,
   createRole,
@@ -21,6 +22,13 @@ export function PermissionsPage() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<'roles' | 'permissions' | 'links'>('roles')
 
+  const ACTIONS: Record<string, string> = {
+    read: 'Читать',
+    create: 'Создать',
+    update: 'Обновить',
+    delete: 'Удалить',
+  }
+
   const [roleModal, setRoleModal] = useState(false)
   const [permModal, setPermModal] = useState(false)
   const [linkModal, setLinkModal] = useState(false)
@@ -32,6 +40,8 @@ export function PermissionsPage() {
   })
   const [linkForm, setLinkForm] = useState({ role_id: '', permission_id: '' })
   const [editingRole, setEditingRole] = useState<Role | null>(null)
+  const [editingPermission, setEditingPermission] = useState<Permission | null>(null)
+  const [editingLink, setEditingLink] = useState<RolePermission | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -113,19 +123,37 @@ export function PermissionsPage() {
                     key: 'actions',
                     header: '',
                     render: (r) => (
-                      <Button
-                        variant="ghost"
-                        onClick={() => {
-                          setEditingRole(r)
-                          setRoleForm({
-                            name: r.name,
-                            description: r.description,
-                          })
-                          setRoleModal(true)
-                        }}
-                      >
-                        Изменить
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingRole(r)
+                            setRoleForm({
+                              name: r.name,
+                              description: r.description,
+                            })
+                            setRoleModal(true)
+                          }}
+                        >
+                          Изменить
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={async () => {
+                            if (confirm('Вы уверены?')) {
+                              await changeRole(r.id, {
+                                action: 'delete',
+                                id: r.id,
+                                name: r.name,
+                                description: r.description,
+                              })
+                              await load()
+                            }
+                          }}
+                        >
+                          Удалить
+                        </Button>
+                      </div>
                     ),
                   },
                 ]}
@@ -138,7 +166,11 @@ export function PermissionsPage() {
               <div className="flex justify-end">
                 <Button
                   onClick={() => {
-                    setPermForm({ resource: '', action: '', name: '' })
+                    setPermForm({
+                      resource: '',
+                      action: Object.keys(ACTIONS)[0] || '',
+                      name: '',
+                    })
                     setPermModal(true)
                   }}
                 >
@@ -151,7 +183,49 @@ export function PermissionsPage() {
                   { key: 'id', header: 'ID' },
                   { key: 'name', header: 'Имя' },
                   { key: 'resource', header: 'Ресурс' },
-                  { key: 'action', header: 'Действие' },
+                  {
+                    key: 'action',
+                    header: 'Действие',
+                    render: (p) => ACTIONS[p.action] ?? p.action,
+                  },
+                  {
+                    key: 'actions',
+                    header: '',
+                    render: (p) => (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingPermission(p)
+                            setPermForm({
+                              name: p.name,
+                              resource: p.resource,
+                              action: p.action,
+                            })
+                            setPermModal(true)
+                          }}
+                        >
+                          Изменить
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={async () => {
+                            if (confirm('Вы уверены?')) {
+                              await changePermission(p.id, {
+                                action_type: 'delete',
+                                resource: p.resource,
+                                action: p.action,
+                                name: p.name,
+                              })
+                              await load()
+                            }
+                          }}
+                        >
+                          Удалить
+                        </Button>
+                      </div>
+                    ),
+                  },
                 ]}
               />
             </>
@@ -162,7 +236,12 @@ export function PermissionsPage() {
               <div className="flex justify-end">
                 <Button
                   onClick={() => {
-                    setLinkForm({ role_id: '', permission_id: '' })
+                    setLinkForm({
+                      role_id: roles[0]?.id ? String(roles[0].id) : '',
+                      permission_id: permissions[0]?.id
+                        ? String(permissions[0].id)
+                        : '',
+                    })
                     setLinkModal(true)
                   }}
                 >
@@ -189,17 +268,34 @@ export function PermissionsPage() {
                     key: 'actions',
                     header: '',
                     render: (rp) => (
-                      <Button
-                        variant="danger"
-                        onClick={async () => {
-                          await changeRolePermission(rp.id, {
-                            action: 'delete',
-                          })
-                          await load()
-                        }}
-                      >
-                        Удалить
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingLink(rp)
+                            setLinkForm({
+                              role_id: String(rp.role_id),
+                              permission_id: String(rp.permission_id),
+                            })
+                            setLinkModal(true)
+                          }}
+                        >
+                          Изменить
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={async () => {
+                            if (confirm('Вы уверены?')) {
+                              await changeRolePermission(rp.id, {
+                                action: 'delete',
+                              })
+                              await load()
+                            }
+                          }}
+                        >
+                          Удалить
+                        </Button>
+                      </div>
                     ),
                   },
                 ]}
@@ -254,7 +350,7 @@ export function PermissionsPage() {
 
       <Modal
         open={permModal}
-        title="Новое право"
+        title={editingPermission ? 'Редактировать право' : 'Новое право'}
         onClose={() => setPermModal(false)}
         footer={
           <div className="flex justify-end gap-2">
@@ -263,8 +359,16 @@ export function PermissionsPage() {
             </Button>
             <Button
               onClick={async () => {
-                await createPermission(permForm)
+                if (editingPermission) {
+                  await changePermission(editingPermission.id, {
+                    action_type: 'update',
+                    ...permForm,
+                  })
+                } else {
+                  await createPermission(permForm)
+                }
                 setPermModal(false)
+                setEditingPermission(null)
                 await load()
               }}
             >
@@ -285,18 +389,27 @@ export function PermissionsPage() {
             setPermForm({ ...permForm, resource: e.target.value })
           }
         />
-        <Input
-          label="Действие"
-          value={permForm.action}
-          onChange={(e) =>
-            setPermForm({ ...permForm, action: e.target.value })
-          }
-        />
+        <label className="block space-y-1.5">
+          <span className="text-sm font-medium text-slate-700">Действие</span>
+          <select
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            value={permForm.action}
+            onChange={(e) =>
+              setPermForm({ ...permForm, action: e.target.value })
+            }
+          >
+            {Object.entries(ACTIONS).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
+        </label>
       </Modal>
 
       <Modal
         open={linkModal}
-        title="Привязать право"
+        title={editingLink ? 'Редактировать связь' : 'Привязать право'}
         onClose={() => setLinkModal(false)}
         footer={
           <div className="flex justify-end gap-2">
@@ -305,11 +418,18 @@ export function PermissionsPage() {
             </Button>
             <Button
               onClick={async () => {
-                await createRolePermission({
-                  role_id: Number(linkForm.role_id),
-                  permission_id: Number(linkForm.permission_id),
-                })
+                if (editingLink) {
+                  await changeRolePermission(editingLink.id, {
+                    action: 'update',
+                  })
+                } else {
+                  await createRolePermission({
+                    role_id: Number(linkForm.role_id),
+                    permission_id: Number(linkForm.permission_id),
+                  })
+                }
                 setLinkModal(false)
+                setEditingLink(null)
                 await load()
               }}
             >
@@ -344,7 +464,6 @@ export function PermissionsPage() {
               setLinkForm({ ...linkForm, permission_id: e.target.value })
             }
           >
-            <option value="">—</option>
             {permissions.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}

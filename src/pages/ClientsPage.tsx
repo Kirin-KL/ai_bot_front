@@ -146,9 +146,9 @@ export function ClientsPage() {
             <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
               <div className="text-sm text-slate-600">
                 Страница <span className="font-semibold">{currentPage}</span> 
-                {clients.length === pageSize && (
-                  <span> • показано {pageSize} клиентов (загружено: {clients.length})</span>
-                )}
+                {/*clients.length === pageSize && (
+                  <span> •  {pageSize} клиентов из ...</span>
+                )*/}
                 {clients.length < pageSize && (
                   <span> • всего {(currentPage - 1) * pageSize + clients.length} клиентов</span>
                 )}

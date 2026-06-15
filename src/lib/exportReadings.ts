@@ -30,7 +30,7 @@ function readingToRow(
     Значение: formatReadingValue(reading.value, typeName),
     Название: meter?.name ?? '—',
     'Серийный №': meter?.serial_number ?? '—',
-    Клиент: formatClientName(client),
+    Клиент: client?.account_number ?? '—',
     Тип: typeName ?? '—',
     Передал:
       maps.userMap.get(reading.submitted_by)?.full_name ?? reading.submitted_by,
