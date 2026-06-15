@@ -22,19 +22,26 @@ export function ClientsPage() {
   const [editing, setEditing] = useState<Client | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const pageSize = 20
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
+      const offset = (currentPage - 1) * pageSize
       const data = await fetchObjects<Client>('clients', {
         sort_by: '-id',
-        limit: 1000,
+        limit: pageSize,
+        offset: offset,
       })
       setClients(data)
+      // Примерный расчет общего количества (если API не возвращает total)
+      setTotalCount(data.length === pageSize ? currentPage * pageSize + 1 : (currentPage - 1) * pageSize + data.length)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [currentPage, pageSize])
 
   useEffect(() => {
     load()
@@ -77,6 +84,7 @@ export function ClientsPage() {
         })
       }
       setModalOpen(false)
+      setCurrentPage(1)
       await load()
     } finally {
       setSaving(false)
@@ -87,6 +95,7 @@ export function ClientsPage() {
     if (!confirm(`Удалить клиента ${client.last_name} ${client.first_name}?`))
       return
     await changeClient(client.id, { action: 'delete' })
+    setCurrentPage(1)
     await load()
   }
 
@@ -103,34 +112,66 @@ export function ClientsPage() {
       {loading ? (
         <Spinner />
       ) : (
-        <DataTable<Client>
-          data={clients.filter((c) => !c.deleted_at)}
-          columns={[
-            { key: 'id', header: 'ID' },
-            { key: 'last_name', header: 'Фамилия' },
-            { key: 'first_name', header: 'Имя' },
-            {
-              key: 'middle_name',
-              header: 'Отчество',
-              render: (c) => c.middle_name ?? '—',
-            },
-            { key: 'account_number', header: 'Лицевой счёт' },
-            {
-              key: 'actions',
-              header: '',
-              render: (c) => (
-                <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => openEdit(c)}>
-                    Изменить
-                  </Button>
-                  <Button variant="danger" onClick={() => handleDelete(c)}>
-                    Удалить
-                  </Button>
-                </div>
-              ),
-            },
-          ]}
-        />
+        <>
+          <DataTable<Client>
+            data={clients.filter((c) => !c.deleted_at)}
+            columns={[
+              { key: 'id', header: 'ID' },
+              { key: 'last_name', header: 'Фамилия' },
+              { key: 'first_name', header: 'Имя' },
+              {
+                key: 'middle_name',
+                header: 'Отчество',
+                render: (c) => c.middle_name ?? '—',
+              },
+              { key: 'account_number', header: 'Лицевой счёт' },
+              {
+                key: 'actions',
+                header: '',
+                render: (c) => (
+                  <div className="flex gap-2">
+                    <Button variant="ghost" onClick={() => openEdit(c)}>
+                      Изменить
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(c)}>
+                      Удалить
+                    </Button>
+                  </div>
+                ),
+              },
+            ]}
+          />
+          
+          {clients.length > 0 && (
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+              <div className="text-sm text-slate-600">
+                Страница <span className="font-semibold">{currentPage}</span> 
+                {clients.length === pageSize && (
+                  <span> • показано {pageSize} клиентов (загружено: {clients.length})</span>
+                )}
+                {clients.length < pageSize && (
+                  <span> • всего {(currentPage - 1) * pageSize + clients.length} клиентов</span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  ← Назад
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  disabled={clients.length < pageSize}
+                >
+                  Далее →
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <Modal
