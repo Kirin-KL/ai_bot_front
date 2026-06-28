@@ -6,13 +6,43 @@ import { DataTable } from '@/components/ui/DataTable'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { Spinner } from '@/components/ui/Spinner'
-import type { Client } from '@/types'
+import type { Client, ObjectQueryParams } from '@/types'
 
 const emptyForm = {
   last_name: '',
   first_name: '',
   middle_name: '',
   account_number: '',
+}
+
+type ClientSearch = typeof emptyForm
+
+function buildClientSearchParams(
+  search: ClientSearch,
+  partialMatch: boolean,
+): ObjectQueryParams {
+  const params: ObjectQueryParams = {}
+  const suffix = partialMatch ? '__contains' : ''
+
+  const fields: (keyof ClientSearch)[] = [
+    'last_name',
+    'first_name',
+    'middle_name',
+    'account_number',
+  ]
+
+  for (const field of fields) {
+    const value = search[field].trim()
+    if (value) {
+      params[`${field}${suffix}`] = value
+    }
+  }
+
+  return params
+}
+
+function hasActiveSearch(search: ClientSearch) {
+  return Object.values(search).some((v) => v.trim() !== '')
 }
 
 export function ClientsPage() {
@@ -23,7 +53,9 @@ export function ClientsPage() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalCount, setTotalCount] = useState(0)
+  const [searchDraft, setSearchDraft] = useState<ClientSearch>(emptyForm)
+  const [appliedSearch, setAppliedSearch] = useState<ClientSearch>(emptyForm)
+  const [partialMatch, setPartialMatch] = useState(false)
   const pageSize = 20
 
   const load = useCallback(async () => {
@@ -33,19 +65,31 @@ export function ClientsPage() {
       const data = await fetchObjects<Client>('clients', {
         sort_by: '-id',
         limit: pageSize,
-        offset: offset,
+        offset,
+        include_deleted: false,
+        ...buildClientSearchParams(appliedSearch, partialMatch),
       })
       setClients(data)
-      // Примерный расчет общего количества (если API не возвращает total)
-      setTotalCount(data.length === pageSize ? currentPage * pageSize + 1 : (currentPage - 1) * pageSize + data.length)
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize])
+  }, [currentPage, pageSize, appliedSearch, partialMatch])
 
   useEffect(() => {
     load()
   }, [load])
+
+  function handleSearch() {
+    setAppliedSearch({ ...searchDraft })
+    setCurrentPage(1)
+  }
+
+  function handleResetSearch() {
+    setSearchDraft(emptyForm)
+    setAppliedSearch(emptyForm)
+    setPartialMatch(false)
+    setCurrentPage(1)
+  }
 
   function openCreate() {
     setEditing(null)
@@ -99,6 +143,8 @@ export function ClientsPage() {
     await load()
   }
 
+  const searchActive = hasActiveSearch(appliedSearch)
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -109,12 +155,97 @@ export function ClientsPage() {
         <Button onClick={openCreate}>Добавить клиента</Button>
       </div>
 
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-4 text-sm font-semibold text-slate-800">Поиск</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Input
+            label="Фамилия"
+            value={searchDraft.last_name}
+            onChange={(e) =>
+              setSearchDraft({ ...searchDraft, last_name: e.target.value })
+            }
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="Иванова"
+          />
+          <Input
+            label="Имя"
+            value={searchDraft.first_name}
+            onChange={(e) =>
+              setSearchDraft({ ...searchDraft, first_name: e.target.value })
+            }
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="Юлия"
+          />
+          <Input
+            label="Отчество"
+            value={searchDraft.middle_name}
+            onChange={(e) =>
+              setSearchDraft({ ...searchDraft, middle_name: e.target.value })
+            }
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="Сидоровна"
+          />
+          <Input
+            label="Лицевой счёт"
+            value={searchDraft.account_number}
+            onChange={(e) =>
+              setSearchDraft({
+                ...searchDraft,
+                account_number: e.target.value,
+              })
+            }
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="1226310498"
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={partialMatch}
+              onChange={(e) => setPartialMatch(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+            />
+            Частичное совпадение (содержит)
+          </label>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={handleResetSearch}>
+              Сбросить
+            </Button>
+            <Button onClick={handleSearch}>Найти</Button>
+          </div>
+        </div>
+
+        {searchActive && (
+          <p className="mt-3 text-xs text-slate-500">
+            Активный фильтр:{' '}
+            {[
+              appliedSearch.last_name && `фамилия «${appliedSearch.last_name}»`,
+              appliedSearch.first_name && `имя «${appliedSearch.first_name}»`,
+              appliedSearch.middle_name &&
+                `отчество «${appliedSearch.middle_name}»`,
+              appliedSearch.account_number &&
+                `ЛС «${appliedSearch.account_number}»`,
+            ]
+              .filter(Boolean)
+              .join(', ')}
+            {partialMatch && ' • частичное совпадение'}
+          </p>
+        )}
+      </div>
+
       {loading ? (
         <Spinner />
       ) : (
         <>
           <DataTable<Client>
-            data={clients.filter((c) => !c.deleted_at)}
+            data={clients}
+            emptyMessage={
+              searchActive
+                ? 'Клиенты по заданным критериям не найдены'
+                : 'Нет данных'
+            }
             columns={[
               { key: 'id', header: 'ID' },
               { key: 'last_name', header: 'Фамилия' },
@@ -141,16 +272,19 @@ export function ClientsPage() {
               },
             ]}
           />
-          
-          {clients.length > 0 && (
+
+          {(clients.length > 0 || currentPage > 1) && (
             <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
               <div className="text-sm text-slate-600">
-                Страница <span className="font-semibold">{currentPage}</span> 
-                {/*clients.length === pageSize && (
-                  <span> •  {pageSize} клиентов из ...</span>
-                )*/}
-                {clients.length < pageSize && (
-                  <span> • всего {(currentPage - 1) * pageSize + clients.length} клиентов</span>
+                Страница <span className="font-semibold">{currentPage}</span>
+                {clients.length < pageSize ? (
+                  <span>
+                    {' '}
+                    • найдено {(currentPage - 1) * pageSize + clients.length}{' '}
+                    {searchActive ? 'совпадений' : 'клиентов'}
+                  </span>
+                ) : (
+                  <span> • показано {pageSize} записей</span>
                 )}
               </div>
               <div className="flex gap-2">
