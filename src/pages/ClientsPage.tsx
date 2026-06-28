@@ -45,6 +45,19 @@ function hasActiveSearch(search: ClientSearch) {
   return Object.values(search).some((v) => v.trim() !== '')
 }
 
+function normalizeSearch(search: ClientSearch): ClientSearch {
+  return {
+    last_name: search.last_name.trim(),
+    first_name: search.first_name.trim(),
+    middle_name: search.middle_name.trim(),
+    account_number: search.account_number.trim(),
+  }
+}
+
+function searchSignature(search: ClientSearch, partialMatch: boolean) {
+  return JSON.stringify({ ...normalizeSearch(search), partialMatch })
+}
+
 export function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
@@ -54,8 +67,11 @@ export function ClientsPage() {
   const [saving, setSaving] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchDraft, setSearchDraft] = useState<ClientSearch>(emptyForm)
+  const [partialMatchDraft, setPartialMatchDraft] = useState(false)
   const [appliedSearch, setAppliedSearch] = useState<ClientSearch>(emptyForm)
-  const [partialMatch, setPartialMatch] = useState(false)
+  const [appliedPartialMatch, setAppliedPartialMatch] = useState(false)
+  /** Меняется при каждом «Найти» / «Сбросить», чтобы load всегда перезапускался */
+  const [searchRevision, setSearchRevision] = useState(0)
   const pageSize = 20
 
   const load = useCallback(async () => {
@@ -67,28 +83,41 @@ export function ClientsPage() {
         limit: pageSize,
         offset,
         include_deleted: false,
-        ...buildClientSearchParams(appliedSearch, partialMatch),
+        ...buildClientSearchParams(appliedSearch, appliedPartialMatch),
       })
       setClients(data)
+    } catch (error) {
+      console.error('Failed to load clients:', error)
+      setClients([])
     } finally {
       setLoading(false)
     }
-  }, [currentPage, pageSize, appliedSearch, partialMatch])
+  }, [
+    currentPage,
+    pageSize,
+    appliedSearch,
+    appliedPartialMatch,
+    searchRevision,
+  ])
 
   useEffect(() => {
     load()
   }, [load])
 
   function handleSearch() {
-    setAppliedSearch({ ...searchDraft })
+    setAppliedSearch(normalizeSearch(searchDraft))
+    setAppliedPartialMatch(partialMatchDraft)
     setCurrentPage(1)
+    setSearchRevision((r) => r + 1)
   }
 
   function handleResetSearch() {
     setSearchDraft(emptyForm)
+    setPartialMatchDraft(false)
     setAppliedSearch(emptyForm)
-    setPartialMatch(false)
+    setAppliedPartialMatch(false)
     setCurrentPage(1)
+    setSearchRevision((r) => r + 1)
   }
 
   function openCreate() {
@@ -144,6 +173,12 @@ export function ClientsPage() {
   }
 
   const searchActive = hasActiveSearch(appliedSearch)
+  const filtersChanged =
+    searchSignature(searchDraft, partialMatchDraft) !==
+    searchSignature(appliedSearch, appliedPartialMatch)
+
+  // Фильтруем удалённых клиентов на клиентской стороне
+  const activeClients = clients.filter((c) => !c.deleted_at)
 
   return (
     <div className="space-y-6">
@@ -203,8 +238,8 @@ export function ClientsPage() {
           <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
             <input
               type="checkbox"
-              checked={partialMatch}
-              onChange={(e) => setPartialMatch(e.target.checked)}
+              checked={partialMatchDraft}
+              onChange={(e) => setPartialMatchDraft(e.target.checked)}
               className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
             />
             Частичное совпадение (содержит)
@@ -217,7 +252,13 @@ export function ClientsPage() {
           </div>
         </div>
 
-        {searchActive && (
+        {filtersChanged && (
+          <p className="mt-3 text-xs text-amber-700">
+            Параметры изменены — нажмите «Найти», чтобы обновить результаты
+          </p>
+        )}
+
+        {searchActive && !filtersChanged && (
           <p className="mt-3 text-xs text-slate-500">
             Активный фильтр:{' '}
             {[
@@ -230,22 +271,42 @@ export function ClientsPage() {
             ]
               .filter(Boolean)
               .join(', ')}
-            {partialMatch && ' • частичное совпадение'}
+            {appliedPartialMatch && ' • частичное совпадение'}
           </p>
         )}
       </div>
 
       {loading ? (
         <Spinner />
+      ) : activeClients.length === 0 ? (
+        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-400">
+            ∅
+          </div>
+          <p className="text-base font-semibold text-slate-800">
+            {searchActive
+              ? 'Клиенты по заданным критериям не найдены'
+              : 'Список клиентов пуст'}
+          </p>
+          <p className="mt-2 text-sm text-slate-500">
+            {searchActive
+              ? 'Измените параметры поиска или включите частичное совпадение'
+              : 'Добавьте первого клиента с помощью кнопки выше'}
+          </p>
+          {searchActive && (
+            <Button
+              variant="secondary"
+              className="mt-6"
+              onClick={handleResetSearch}
+            >
+              Сбросить фильтры
+            </Button>
+          )}
+        </div>
       ) : (
         <>
           <DataTable<Client>
-            data={clients}
-            emptyMessage={
-              searchActive
-                ? 'Клиенты по заданным критериям не найдены'
-                : 'Нет данных'
-            }
+            data={activeClients}
             columns={[
               { key: 'id', header: 'ID' },
               { key: 'last_name', header: 'Фамилия' },
@@ -273,14 +334,14 @@ export function ClientsPage() {
             ]}
           />
 
-          {(clients.length > 0 || currentPage > 1) && (
+          {(activeClients.length > 0 || currentPage > 1) && (
             <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
               <div className="text-sm text-slate-600">
                 Страница <span className="font-semibold">{currentPage}</span>
-                {clients.length < pageSize ? (
+                {activeClients.length < pageSize ? (
                   <span>
                     {' '}
-                    • найдено {(currentPage - 1) * pageSize + clients.length}{' '}
+                    • найдено {(currentPage - 1) * pageSize + activeClients.length}{' '}
                     {searchActive ? 'совпадений' : 'клиентов'}
                   </span>
                 ) : (
@@ -298,7 +359,7 @@ export function ClientsPage() {
                 <Button
                   variant="secondary"
                   onClick={() => setCurrentPage((p) => p + 1)}
-                  disabled={clients.length < pageSize}
+                  disabled={activeClients.length < pageSize}
                 >
                   Далее →
                 </Button>
