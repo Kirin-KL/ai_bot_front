@@ -31,9 +31,7 @@ function readingToRow(
     Название: meter?.name ?? '—',
     'Серийный №': meter?.serial_number ?? '—',
     Клиент: client?.account_number ?? '—',
-    Тип: typeName ?? '—',
-    Передал:
-      maps.userMap.get(reading.submitted_by)?.full_name ?? reading.submitted_by,
+    Тип: typeName ?? '—'
   }
 }
 
