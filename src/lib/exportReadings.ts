@@ -63,5 +63,5 @@ export function downloadReadingsExcel(
 }
 
 export function getExportButtonLabel(period: ReadingPeriod): string {
-  return `Скачать Excel (${READING_PERIOD_LABELS[period].toLowerCase()})`
+  return `Скачать (.xlsx)`
 }
